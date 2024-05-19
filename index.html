@@ -35,46 +35,65 @@
                     </div>
                     <textarea id="time_json"></textarea>
                     <script>
-                        var unix = null;
+                        var unix_ms = null;
                         var adds = "https://elp.emptybox.win/";
 
-                        function updateUnixTime(adds) {
-                            unix = epochlink_unixtime(adds);
+                        function updateUnixTimeMs(adds) {
+                            unix_ms = epochlink_unixtime_ms(adds);
                         }
+
                         function updateJsonTime(adds) {
                             var json = epochlink_json(adds);
-                            $("#time_json").val(JSON.stringify(json,null,4));
+                            $("#time_json").val(JSON.stringify(json, null, 4));
+                        }
+
+                        function alignToNextSecondMs(unixTimeMs) {
+                            var ms = unixTimeMs % 1000;
+                            var adjustment = 1000 - ms;
+                            return { adjustedTime: unixTimeMs + adjustment, waitTime: adjustment };
                         }
 
                         $(document).ready(function() {
-                            updateUnixTime(adds);
+                            updateUnixTimeMs(adds);
                             updateJsonTime(adds);
-                            view_time();
 
-                            $("#done").click(function() {
-                                var serverUrl = $("#server_url").val();
-                                if (serverUrl) {
-                                    adds = "https://" + serverUrl + "/";
-                                    updateUnixTime(adds);
-                                    updateJsonTime(adds);
-                                }
-                            });
+                            var waitTime = 0;
+                            if (unix_ms !== null) {
+                                var result = alignToNextSecondMs(unix_ms);
+                                unix_ms = result.adjustedTime;
+                                waitTime = result.waitTime;
+                            }
 
                             function view_time() {
-                                if (unix !== null) {
-                                    var dt = new Date(unix * 1000);
+                                if (unix_ms !== null) {
+                                    var dt = new Date(unix_ms);
                                     $("#now_time").html(dt.toLocaleTimeString());
                                     $("#now_date").html(dt.toLocaleDateString());
-                                    unix++;
-                                }else{
+                                    unix_ms += 1000;
+                                } else {
                                     $("#now_time").html("00:00:00");
                                     $("#now_date").html("Error");
                                 }
                             }
 
-                            setInterval(view_time, 1000);
-                        });
+                            $("#done").click(function() {
+                                var serverUrl = $("#server_url").val();
+                                if (serverUrl) {
+                                    adds = "https://" + serverUrl + "/";
+                                    updateUnixTimeMs(adds);
+                                    updateJsonTime(adds);
+                                    if (unix_ms !== null) {
+                                        var result = alignToNextSecondMs(unix_ms);
+                                        unix_ms = result.adjustedTime;
+                                        waitTime = result.waitTime;
+                                    }
+                                }
+                            });
 
+                            setTimeout(function() {
+                                setInterval(view_time, 1000);
+                            }, waitTime);
+                        });
                     </script>
                 </div>
             </div>
