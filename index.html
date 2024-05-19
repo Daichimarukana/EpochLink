@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <link rel="icon" href="img/favicon.png" id="favicon">
+        <link rel="apple-touch-icon" sizes="180x180" href="img/favicon.png">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic:wght@400;700&family=BIZ+UDPGothic:wght@400;700&family=Inter:wght@100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">        <link rel="stylesheet" href="css/style.css" />
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        <script src="js/epochlink.js"></script>
+        <title>EpochLink</title>
+    </head>
+    <body>
+        <main>
+            <header>
+                <h1>EpochLink <span>Protocol</span></h1>
+            </header>
+            <div class="top-zone">
+                <img src="img/top.png">
+                <p class="img-text">What time is it?</p>
+                <div class="img-text-mini">NTPじゃなくても、HTTP/HTTPSのみでも。<br>EpochLink Protocol</div>
+            </div>
+
+            <div class="try-server-zone">
+                <div class="flexbox">
+                    <input type="text" id="server_url" value="elp.emptybox.win" placeholder="EpochLink Server Address">
+                    <button id="done">Go</button>
+                </div>
+                <div class="flexbox">
+                    <div class="timeblock">
+                        <h1 id="now_time">XX:XX.XX</h1>
+                        <h2 id="now_date">XXXX/XX/XX</h2>
+                    </div>
+                    <textarea id="time_json"></textarea>
+                    <script>
+                        var unix = null;
+                        var adds = "https://elp.emptybox.win/";
+
+                        function updateUnixTime(adds) {
+                            unix = epochlink_unixtime(adds);
+                        }
+                        function updateJsonTime(adds) {
+                            var json = epochlink_json(adds);
+                            $("#time_json").val(JSON.stringify(json,null,4));
+                        }
+
+                        $(document).ready(function() {
+                            updateUnixTime(adds);
+                            updateJsonTime(adds);
+                            view_time();
+
+                            $("#done").click(function() {
+                                var serverUrl = $("#server_url").val();
+                                if (serverUrl) {
+                                    adds = "https://" + serverUrl + "/";
+                                    updateUnixTime(adds);
+                                    updateJsonTime(adds);
+                                }
+                            });
+
+                            function view_time() {
+                                if (unix !== null) {
+                                    var dt = new Date(unix * 1000);
+                                    $("#now_time").html(dt.toLocaleTimeString());
+                                    $("#now_date").html(dt.toLocaleDateString());
+                                    unix++;
+                                }else{
+                                    $("#now_time").html("00:00:00");
+                                    $("#now_date").html("Error");
+                                }
+                            }
+
+                            setInterval(view_time, 1000);
+                        });
+
+                    </script>
+                </div>
+            </div>
+
+            <div class="about-epochlink-protocol">
+                <h1>Welcome to EpochLink Protocol</h1>
+                <p>EpochLinkはHTTP/HTTPS通信で時刻同期をできるように作られたプロトコルです。<br>
+                    世の中の様々なコンピューターの時刻は、常に同期されている必要があります。<br>
+                    なぜなら、正確な時刻がわからないと様々な処理が正しく動作しなくなる可能性があるからです。<br>
+                    事実、既に世の中にはNTPと呼ばれる優れた時刻同期プロトコルがありますが、このプロトコルはクライアントサイドのJavaScriptから利用ができなかったり、一つのStratum 1に多くのアクセスが集中しすぎていたり、NTPv3までは2036年に時刻がオーバーフローしてしまうなどの課題を抱えています。<br>
+                    <br>
+                    JSON形式で、簡単に取り扱いができる時刻同期プロトコルのEpochLinkでは、これらの問題を解消し、クライアントサイドのJavaScriptから比較的正確な時刻を取得したり、何らかの事情でNTPが使用できない場合などに役立つことができます。<br>
+                </p>
+                <h1>Specification</h1>
+                <p>EpochLinkの仕様についてまとめました<br>
+                    <br>
+                    通信方式: HTTP/HTTPS<br>
+                    リクエスト形式: HTTP GET<br>
+                    レスポンス形式: JSON</p>
+                <h2>Server Side</h2>
+                <p>EpochLinkサーバーからは、クライアントからのリクエストに対して以下のようなJSONコードをレスポンスとして返します。</p>
+                <pre>
+{
+    "protocol": "EpochLink",
+    "version": "1.0.0",
+    "address": "https://elp.example.com/",
+    "time_zone": "UTC",
+    "iso8601_time": "2024-01-01T00:00:00.530",
+    "unix_time_ms": "1704034800.530",
+    "unix_time": "1704034800"
+}               </pre>
+                <p>それぞれ、以下のようなデータが含まれます。</p>
+                <table>
+                    <tr>
+                        <th width="30%">Name</th>
+                        <th width="50%">Data</th>
+                        <th width="20%">Type</th>
+                    </tr>
+                    <tr>
+                        <td>protocol</td>
+                        <td>プロトコル名</td>
+                        <td>文字列/String</td>
+                    </tr>
+                    <tr>
+                        <td>version</td>
+                        <td>プロトコルのバージョン</td>
+                        <td>文字列/String</td>
+                    </tr>
+                    <tr>
+                        <td>address</td>
+                        <td>サーバーのアドレス</td>
+                        <td>文字列/String</td>
+                    </tr>
+                    <tr>
+                        <td>time_zone</td>
+                        <td>時刻のタイムゾーン</td>
+                        <td>文字列/String</td>
+                    </tr>
+                    <tr>
+                        <td>iso8601_time</td>
+                        <td>ISO8601に準拠した時刻</td>
+                        <td>文字列/String</td>
+                    </tr>
+                    <tr>
+                        <td>unix_time_ms</td>
+                        <td>ミリ秒を含むunix時刻</td>
+                        <td>数値型/int</td>
+                    </tr>
+                    <tr>
+                        <td>unix_time</td>
+                        <td>ミリ秒を含まないunix時刻</td>
+                        <td>数値型/int</td>
+                    </tr>
+                </table>
+                <h2>Client Side</h2>
+                <p>クライアントからは、EpochLinkサーバーに対してGETリクエストを送信し、JSONを取得します。</p>
+                <p><b>時刻の取得までに流れ</b><br>
+                    1. EpochLinkサーバーが正確な時刻を設定する(事前準備)<br>
+                    2. 正確な時刻を求めているクライアントがEpochLinkサーバーにリクエストをする<br>
+                    3. EpochLinkサーバーからレスポンスで時刻を含んだJSONが返ってくる<br>
+                    4. クライアント側で時刻を補正して使用する</p>
+                <p><b>補正について</b><br>
+                    正確な時刻の取得には、サーバーとクライアント間の通信速度などによる、ラグを求めて時刻を補正する必要があります。<br>
+                    EpochLinkでは、NTPほど高精度な補正は期待できないため、高精度でズレのほとんどない時刻取得を望んでいる方はNTPなどを使用してください。<br>
+                    <br>
+                    1. EpochLinkサーバーにリクエストする直前の時刻を記録<br>
+                    2. EpochLinkからのレスポンスが返ってきた時刻を記録<br>
+                    3. 2と3の差を求め、2で割る(往復分あるため2で割る)<br>
+                    4. EpochLinkサーバーのレスポンスに含まれている時刻に3で求めた差を足す<br>
+                    <br>
+                    これにより、通信時間分のラグを補正することができます。<br>
+                    補正するかしないかはクライアントにより処理が委ねられます。<br>
+                    <br>
+                    How to useにてサンプルコードがありますのでぜひそちらもご確認ください！
+                </p>
+                
+                <h1>How to use</h1>
+                <p>EpochLinkの使用方法をまとめました</p>
+                <h2>Server Side</h2>
+                <p>Specificationにて記載した仕様に沿ったレスポンスをGETに対して行うものであれば、それはEpochLinkサーバーになります。<br>
+                    正確な時刻を取得し、それをJSONに含んでレスポンスを返す必要があります。<br>
+                    <br>
+                    サンプルコードでは、時刻はサーバーを動作させているコンピューターから取得しています。
+                </p>
+                <p>Node.js向けサンプルコード</p>
+                <pre>
+var port = 8080
+
+var http = require('http');
+var server = http.createServer(function(request, response){
+    response.writeHead(200,{'Content-Type': 'application/json; charset=utf-8'},{'Access-Control-Allow-Origin': '*'});
+    var now = new Date();
+    time_json = {
+        "protocol": "EpochLink",
+        "version": "1.0.0",
+        "address": request.protocol + '://' + request.headers.host + request.url,
+        "time_zone": "UTC",
+        "iso8601_time": now.toISOString(),
+        "unix_time_ms": now.getTime(),
+        "unix_time": Math.floor(now.getTime() / 1000)
+    }
+    response.end(JSON.stringify(time_json));
+})
+server.listen(port);
+console.log("Serving on port "+port+"...");</pre>
+
+                <p>他のphp、pythonのサーバーのコードは、当ページ最下部のダウンロードにありますのでphpやpythonでのサーバー構築をお考えの方はそちらもご活用ください！</p>
+                <h2>Client Side</h2>
+                <p>Specificationにて記載した仕様に沿ってJSONを読み取って、時刻を取得できればOKです。<br>
+                    時刻の補正機能があるとなお良いでしょう。<br>
+                    <br>
+                    ここでは、python向けのサンプルコードのみですが、当ページ最下部のダウンロードから取得できる、javascriptやphp、python向けのサンプルコードもあります。<br>
+                    また、取得を容易にするEpochLink.jsもありますのでそちらもご活用ください。
+                </p>
+                <p>Python向けサンプルコード</p>
+                <pre>
+import time
+import requests
+
+url = "https://elp.example.com/"
+
+start_get_dt = int(time.time() * 1000)
+
+response = requests.get(url)
+json_data = response.json()
+
+end_get_dt = int(time.time() * 1000)
+
+now_unix_ms = json_data["unix_time_ms"] + ((end_get_dt - start_get_dt) / 2)
+
+print(time.strftime('%Y/%m/%d %H:%M:%S', time.gmtime(now_unix_ms // 1000)))</pre>
+                
+            <h1>Q&A</h1>
+            <p>よくある質問に回答しています。</p>
+            <p><b>Q. サーバーの時刻が信頼できるかどうかはどう判断するの？</b><br>
+                現状、単一のサーバーから取得するだけでは、信頼できる時刻かは判断できません。<br>
+                クライアント側で、複数のサーバーから時刻を取得して取得した時刻の平均値を使用するなどすると、より信頼できる時刻を使用できるでしょう。<br>
+                また、サーバー側が信頼できる時計から時刻を取得していることを明記していれば、そう簡単にサーバーが狂うことはないでしょう。</p>
+
+            <p><b>Q. 今使用できるサーバーはあるの？</b><br>
+                elp.emptybox.winにてEpochLink対応サーバーを公開しております。<br>
+                以下のルールを守っていただいた上でどなたでも自由に使用していただけますが、予告なくサービスを終了する可能性があるためご注意ください。<br>
+                <br>
+                <b>禁止事項</b><br>
+                - サーバーに意図して攻撃する行為<br>
+                - 1時間に180回以上リクエストする行為<br>
+                - 法令または公序良俗に違反する行為<br>
+                - 本サービスを意図して破壊する、動作を妨害する行為<br>
+                - その他サービス管理者が不適切と判断する行為<br>
+                <br>
+                サーバー内の時刻の同期元はntp.nict.jpです。一日に一度同期しております。</p>
+            
+            <h1>Release Note</h1>
+            <p><b>Version 1.0.0</b><br>
+                EpochLinkの初回リリースです！<br>
+                プロトコルの仕様と例を明確にすることで、利用者の方々がプロトコルについてを理解し、実装できるようになると考えています！</p>
+
+            <h1>License</h1>
+            <p>EpochLink及びこのサイトで配布しているサンプルコード、サーバーはすべてNYSLライセンスです。<br>
+                同梱されている<a href="License.txt">License.txt</a>もご確認ください。</p>
+            </div>
+
+            <div class="openserver-zone">
+                <h1>Public EpochLink server</h1>
+                <p>私だいちまるが運営しているEpochLinkサーバーです。<br>
+                    以下のルールを守っていただいた上で自由に使用していただいて構いません。<br>
+                    なお、予告なくサービスを停止・終了したり、極稀に誤った時刻を発信してしまう可能性があるため、使用は自己責任でお願いいたします。<br>
+                    <br>
+                    サーバーは一日に一度ntp.nict.jpと時刻を同期しております。
+                </p>
+                <p><b>禁止事項</b><br>
+                    - サーバーに意図して攻撃する行為<br>
+                    - 1時間に180回以上リクエストする行為<br>
+                    - 法令または公序良俗に違反する行為<br>
+                    - 本サービスを意図して破壊する、動作を妨害する行為<br>
+                    - その他サービス管理者が不適切と判断する行為<br>
+                    - 生命に関わる時刻の同期に使用する行為
+                </p>
+                <div class="server_box" id="copy">
+                    <h1>elp.emptybox.win</h1>
+                    <p>Push to Copy</p>
+                </div>
+                <script>
+                    $('#copy').click(function () {
+                        navigator.clipboard.writeText("elp.emptybox.win");
+                    });
+                </script>
+            </div>
+
+            <div class="download-zone">
+                <h1>Download</h1>
+                <p>ここから様々なEpochLinkに関するプログラムをダウンロードできます。<br>
+                    ライセンスはすべてNYSLライセンスです。</p>
+                <div class="flexbox">
+                    <div class="assort_box">
+                        <h1>EpochLink.<span style="color: #46a70a;">js</span></h1>
+                        <p>EpochLinkサーバーに接続して、時刻を取得するJavaScriptです。<br>
+                            <br>
+                            1.25KB
+                        </p>
+                        <a href="download/EpochLink.js" class="download" download>Download</a>
+                    </div>
+                    <div class="assort_box">
+                        <h1>EpochLink <span style="color: #3777FF;">Server</span></h1>
+                        <p>EpochLinkサーバーを構築できるプログラムです。<br>
+                            Node.js,php,pythonに対応しています。<br>
+                            <br>
+                            3.23KB
+                        </p>
+                        <a href="download/EpochLink_Server.zip" class="download" download>Download</a>
+                    </div>
+                    <div class="assort_box">
+                        <h1>EpochLink Sample Code</h1>
+                        <p>EpochLink関連のサンプルコードです。サーバーもクライアントも含まれています。<br>
+                            言語はJavaScript,php,pythonです。<br>
+                            <br>
+                            9.29KB
+                        </p>
+                        <a href="download/EpochLink_Sample_Code.zip" class="download" download>Download</a>
+                    </div>
+                </div>
+            </div>
+            <footer>
+                <a href="https://daichimarukana.com/">© 2022 - 2024 daichimarukana</a>
+            </footer>
+        </main>
+    </body>
+</html>
