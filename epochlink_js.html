@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <link rel="icon" href="img/favicon.png" id="favicon">
+        <link rel="apple-touch-icon" sizes="180x180" href="img/favicon.png">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic:wght@400;700&family=BIZ+UDPGothic:wght@400;700&family=Inter:wght@100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="css/style.css" />
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        <script src="js/epochlink.js"></script>
+        <title>About EpochLink.js</title>
+    </head>
+    <body>
+        <main>
+            <header>
+                <h1>EpochLink <span>Protocol</span></h1>
+            </header>
+
+            <div class="about-epochlink-protocol">
+                <h1>EpochLink.js</h1>
+                <p>EpochLinkをJavaScriptから簡単に使用できるライブラリです。<br>
+                    このライブラリを使用すると、JavaScriptから EpochLink サーバにアクセスし、時刻情報やその他のデータを取得することができます。<br><br>
+                    ライブラリのライセンスは、<a href="License.txt">NYSLライセンス</a>です。</p>
+                <h2>使用方法</h2>
+                <p>トップページより、EpochLink.jsをダウンロードし、適切な場所に配置し、以下のコードで使用することが可能です。</p>
+                <pre>
+&lt;script src=&quot;EpochLink.js&quot;&gt;&lt;/script&gt;</pre>
+                <h2>関数一覧</h2>
+                <p>- epochlink_json(address): アドレスよりJSONを取得してきます。<br>
+                    - epochlink_unixtime(address): アドレスよりUNIX時刻を取得してきます。<br>
+                    - epochlink_unixtime_ms(address): アドレスよりUNIX時刻をミリ秒単位で取得してきます。</p>
+                <h2>使用方法</h2>
+                <p>UNIX時刻を取得してくるサンプルコードです。</p>
+                <pre>
+console.log(epochlink_unixtime("https://elp.example.com/"));</pre>
+
+                <p>UNIX時刻をミリ秒単位で取得してくるサンプルコードです。</p>
+                <pre>
+console.log(epochlink_unixtime_ms("https://elp.example.com/"));</pre>
+
+                <p>取得したUNIX時刻を端末に設定されている地域の表示に合わせて表示するサンプルコードです。<br>
+                    取得するUNIX時刻を秒単位(epochlink_unixtime()を使用)で使用する場合、UNIX時刻に1000をかけて使用してください。(桁を合わせるため)</p>
+                <pre>
+var datetime = new Date(epochlink_unixtime_ms("https://elp.example.com/"));
+var local_datetime = datetime.toLocaleTimeString() + " - " + datetime.toLocaleDateString();
+console.log(local_datetime);</pre>
+            </div>
+
+            <div class="download-zone">
+                <h1>Download</h1>
+                <p>ダウンロードはトップページの最下部よりお願いいたします。<br>
+                    <a href="index.html">トップページ</a></p>
+                </div>
+            </div>
+            <footer>
+                <a href="https://daichimarukana.com/">© 2022 - 2024 daichimarukana</a>
+            </footer>
+        </main>
+    </body>
+</html>

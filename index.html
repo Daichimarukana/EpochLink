@@ -7,7 +7,8 @@
         <link rel="apple-touch-icon" sizes="180x180" href="img/favicon.png">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic:wght@400;700&family=BIZ+UDPGothic:wght@400;700&family=Inter:wght@100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">        <link rel="stylesheet" href="css/style.css" />
+        <link href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic:wght@400;700&family=BIZ+UDPGothic:wght@400;700&family=Inter:wght@100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="css/style.css" />
         <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
         <script src="js/epochlink.js"></script>
         <title>EpochLink</title>
@@ -122,8 +123,8 @@
     "address": "https://elp.example.com/",
     "time_zone": "UTC",
     "iso8601_time": "2024-01-01T00:00:00.530",
-    "unix_time_ms": 1704034800530,
-    "unix_time": 1704034800
+    "unix_time_ms": "1704034800.530",
+    "unix_time": "1704034800"
 }               </pre>
                 <p>それぞれ、以下のようなデータが含まれます。</p>
                 <table>
@@ -246,34 +247,38 @@ now_unix_ms = json_data["unix_time_ms"] + ((end_get_dt - start_get_dt) / 2)
 
 print(time.strftime('%Y/%m/%d %H:%M:%S', time.gmtime(now_unix_ms // 1000)))</pre>
                 
-            <h1>Q&A</h1>
-            <p>よくある質問に回答しています。</p>
-            <p><b>Q. サーバーの時刻が信頼できるかどうかはどう判断するの？</b><br>
-                現状、単一のサーバーから取得するだけでは、信頼できる時刻かは判断できません。<br>
-                クライアント側で、複数のサーバーから時刻を取得して取得した時刻の平均値を使用するなどすると、より信頼できる時刻を使用できるでしょう。<br>
-                また、サーバー側が信頼できる時計から時刻を取得していることを明記していれば、そう簡単にサーバーが狂うことはないでしょう。</p>
+                <h2>EpochLink.<span style="color: #46a70a;">js</span></h2>
+                <p>EpochLinkではEpochLink.jsという簡単にEpochLinkを使用できるJavaScriptを配布しています。<br>
+                    以下のページから使用方法を確認できます。<br>
+                    <a href="epochlink_js.html">About EpochLink.js</a></p>
+                <h1>Q&A</h1>
+                <p>よくある質問に回答しています。</p>
+                <p><b>Q. サーバーの時刻が信頼できるかどうかはどう判断するの？</b><br>
+                    現状、単一のサーバーから取得するだけでは、信頼できる時刻かは判断できません。<br>
+                    クライアント側で、複数のサーバーから時刻を取得して取得した時刻の平均値を使用するなどすると、より信頼できる時刻を使用できるでしょう。<br>
+                    また、サーバー側が信頼できる時計から時刻を取得していることを明記していれば、そう簡単にサーバーが狂うことはないでしょう。</p>
 
-            <p><b>Q. 今使用できるサーバーはあるの？</b><br>
-                elp.emptybox.winにてEpochLink対応サーバーを公開しております。<br>
-                以下のルールを守っていただいた上でどなたでも自由に使用していただけますが、予告なくサービスを終了する可能性があるためご注意ください。<br>
-                <br>
-                <b>禁止事項</b><br>
-                - サーバーに意図して攻撃する行為<br>
-                - 1時間に180回以上リクエストする行為<br>
-                - 法令または公序良俗に違反する行為<br>
-                - 本サービスを意図して破壊する、動作を妨害する行為<br>
-                - その他サービス管理者が不適切と判断する行為<br>
-                <br>
-                サーバー内の時刻の同期元はntp.nict.jpです。一日に一度同期しております。</p>
-            
-            <h1>Release Note</h1>
-            <p><b>Version 1.0.0</b><br>
-                EpochLinkの初回リリースです！<br>
-                プロトコルの仕様と例を明確にすることで、利用者の方々がプロトコルについてを理解し、実装できるようになると考えています！</p>
+                <p><b>Q. 今使用できるサーバーはあるの？</b><br>
+                    elp.emptybox.winにてEpochLink対応サーバーを公開しております。<br>
+                    以下のルールを守っていただいた上でどなたでも自由に使用していただけますが、予告なくサービスを終了する可能性があるためご注意ください。<br>
+                    <br>
+                    <b>禁止事項</b><br>
+                    - サーバーに意図して攻撃する行為<br>
+                    - 1時間に180回以上リクエストする行為<br>
+                    - 法令または公序良俗に違反する行為<br>
+                    - 本サービスを意図して破壊する、動作を妨害する行為<br>
+                    - その他サービス管理者が不適切と判断する行為<br>
+                    <br>
+                    サーバー内の時刻の同期元はntp.nict.jpです。一日に一度同期しております。</p>
+                
+                <h1>Release Note</h1>
+                <p><b>Version 1.0.0</b><br>
+                    EpochLinkの初回リリースです！<br>
+                    プロトコルの仕様と例を明確にすることで、利用者の方々がプロトコルについてを理解し、実装できるようになると考えています！</p>
 
-            <h1>License</h1>
-            <p>EpochLink及びこのサイトで配布しているサンプルコード、サーバーはすべてNYSLライセンスです。<br>
-                同梱されている<a href="License.txt">License.txt</a>もご確認ください。</p>
+                <h1>License</h1>
+                <p>EpochLink及びこのサイトで配布しているサンプルコード、サーバーはすべてNYSLライセンスです。<br>
+                    同梱されている<a href="License.txt">License.txt</a>もご確認ください。</p>
             </div>
 
             <div class="openserver-zone">
@@ -312,7 +317,9 @@ print(time.strftime('%Y/%m/%d %H:%M:%S', time.gmtime(now_unix_ms // 1000)))</pre
                         <h1>EpochLink.<span style="color: #46a70a;">js</span></h1>
                         <p>EpochLinkサーバーに接続して、時刻を取得するJavaScriptです。<br>
                             <br>
-                            1.25KB
+                            v1.0.1
+                            <br>
+                            2.11KB
                         </p>
                         <a href="download/EpochLink.js" class="download" download>Download</a>
                     </div>
